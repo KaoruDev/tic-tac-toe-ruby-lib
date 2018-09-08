@@ -1,37 +1,31 @@
-require 'json'
-require 'models/validators/game_state_validator.rb'
+require 'models/board'
+require 'models/validators/board_state_validator.rb'
 require 'models/validators/coordinate_validator.rb'
 
-class Game < ActiveRecord::Base
-  include ActiveModel::Validations
+class Game
+  def initialize(player_one_id, player_two_id, board = nil)
+    @board = board || Board
+      .new(player_one_id: player_one_id, player_two_id: player_two_id)
+  end
 
-  after_initialize :set_default_state
-
-  validates_with GameStateValidator
+  def start!
+    board.save!
+    self.started = true
+  end
 
   def place(coordinate, player_id)
-    if (error = CoordinateValidator.new.validate(state, coordinate))
+    return 'Game has not begun' unless started
+
+    if (error = CoordinateValidator.new.validate(board.state, coordinate))
       return error
     end
 
-    new_state = state.dup
-    new_state[coordinate] = player_id
-
-    write_attribute(:state, new_state)
-    return nil # rubocop:disable Style/RedundantReturn
-  end
-
-  def state
-    super.dup.freeze
-  end
-
-  def state=(_new_state)
-    raise NotImplementedError, 'You may not directly set state'
+    board.state[coordinate] = player_id
+    board.errors.full_messages.join('. ') unless board.save
   end
 
   private
 
-  def set_default_state
-    write_attribute(:state, []) if state.nil?
-  end
+  attr_reader :board
+  attr_accessor :started
 end
