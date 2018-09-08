@@ -17,6 +17,10 @@ class Game
     end
   end
 
+  def self.score_of(player_id)
+    Board.where(winner_id: player_id).count
+  end
+
   def initialize(player_one_id, player_two_id, board = nil)
     @board = board || Board
       .new(player_one_id: player_one_id, player_two_id: player_two_id)

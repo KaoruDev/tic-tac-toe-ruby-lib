@@ -19,6 +19,20 @@ RSpec.describe Game do
     end
   end
 
+  describe '.score_of' do
+    it 'will find the number of games won by player' do
+      expect(started_game.place(0, 1)).to be_nil
+      expect(started_game.place(1, 2)).to be_nil
+      expect(started_game.place(3, 1)).to be_nil
+      expect(started_game.place(2, 2)).to be_nil
+      expect(started_game.place(6, 1)).to be_nil
+
+      expect(Game.score_of(1)).to eq(1)
+      expect(Game.score_of(2)).to eq(0)
+      expect(Game.score_of(3)).to eq(0)
+    end
+  end
+
   describe '#start!' do
     it 'will start a valid game' do
       Game.new(1, 2).start!
