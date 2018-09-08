@@ -1,9 +1,9 @@
 class BoardStateValidator
   attr_reader :board, :player_mark
 
-  def initialize(board, player_mark)
-    @board = board
-    @player_mark = player_mark
+  def initialize(configs = {})
+    @board = configs[:board]
+    @player_mark = configs[:player_mark]
   end
 
   def validate
@@ -18,7 +18,6 @@ class BoardStateValidator
     end
   end
 
-  # rubocop:disable Metrics/AbcSize: Assignment
   def detect_uneven_turn
     player_moves = board.state.clone
     player_moves.push(player_mark)
@@ -34,5 +33,4 @@ class BoardStateValidator
       "it is player one's turn"
     end
   end
-  # rubocop:enable Metrics/AbcSize: Assignment
 end

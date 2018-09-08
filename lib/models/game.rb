@@ -3,6 +3,11 @@ require 'models/validators/board_state_validator.rb'
 require 'models/validators/coordinate_validator.rb'
 
 class Game
+  VALIDATORS = [
+    CoordinateValidator,
+    BoardStateValidator
+  ].freeze
+
   def initialize(player_one_id, player_two_id, board = nil)
     @board = board || Board
       .new(player_one_id: player_one_id, player_two_id: player_two_id)
@@ -13,14 +18,21 @@ class Game
     self.started = true
   end
 
-  def place(coordinate, player_id)
+  def place(coordinate, player_mark)
     return 'Game has not begun' unless started
 
-    if (error = CoordinateValidator.new.validate(board.state, coordinate))
-      return error
+    VALIDATORS.each do |validator|
+      error = validator.new(
+        board: board,
+        player_mark: player_mark,
+        state: board.state,
+        coordinate: coordinate
+      ).validate
+
+      return error if error
     end
 
-    board.state[coordinate] = player_id
+    board.state[coordinate] = player_mark
     board.errors.full_messages.join('. ') unless board.save
   end
 
