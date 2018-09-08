@@ -3,7 +3,7 @@ require 'models/game.rb'
 
 RSpec.describe Game do
   let(:game) { Game.new(1, 2) }
-  let(:started_game) { game.start! }
+  let(:started_game) { game.tap(&:start) }
 
   describe '.find' do
     it 'will reinitialize game' do
@@ -33,17 +33,14 @@ RSpec.describe Game do
     end
   end
 
-  describe '#start!' do
+  describe '#start' do
     it 'will start a valid game' do
-      Game.new(1, 2).start!
+      expect(Game.new(1, 2).start).to be_nil
     end
 
-    it 'will throw an exception if game state is invalid' do
-      expect { Game.new(nil, 'NULL').start! }
-        .to raise_exception(ActiveRecord::NotNullViolation)
-
-      expect { Game.new(1, 1).start! }
-        .to raise_exception(ActiveRecord::RecordInvalid)
+    it 'will return an error if game state is invalid' do
+      expect(Game.new(nil, 'NULL').start).to eq("Player one can't be blank")
+      expect(Game.new(1, 1).start).to eq('Players cannot play themselves')
     end
   end
 
@@ -106,9 +103,10 @@ RSpec.describe Game do
     end
   end
 
-  describe '#winner' do
-    it 'will return nil when no winner has been declared' do
-      expect(started_game.winner).to be_nil
+  describe '#state' do
+    it 'will return a hash with information' do
+      expect(started_game.state)
+        .to eq(winner: nil, done: false, tied: false)
     end
 
     it 'will return the id of the winner' do
@@ -118,7 +116,24 @@ RSpec.describe Game do
       expect(started_game.place(2, 2)).to be_nil
       expect(started_game.place(6, 1)).to be_nil
 
-      expect(started_game.winner).to eq(1)
+      expect(started_game.state[:winner]).to eq(1)
+    end
+
+    it 'will say if game is tied' do
+      expect(started_game.place(0, 1)).to be_nil
+      expect(started_game.place(1, 2)).to be_nil
+      expect(started_game.place(2, 1)).to be_nil
+
+      expect(started_game.place(3, 2)).to be_nil
+      expect(started_game.place(5, 1)).to be_nil
+      expect(started_game.place(4, 2)).to be_nil
+
+      expect(started_game.place(6, 1)).to be_nil
+      expect(started_game.place(8, 2)).to be_nil
+      expect(started_game.place(7, 1)).to be_nil
+
+      expect(started_game.state)
+        .to eq(winner: nil, done: true, tied: true)
     end
   end
 end

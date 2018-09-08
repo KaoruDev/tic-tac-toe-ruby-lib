@@ -4,6 +4,7 @@ class Board < ActiveRecord::Base
   after_initialize :set_default_state
 
   validate :different_players
+  validates_presence_of :player_one_id, :player_two_id
 
   def player_ids
     [player_one_id, player_two_id]

@@ -19,8 +19,13 @@ RSpec.describe Board do
 
   describe '#create' do
     it 'will not create a new board without 2 not NULL player ids' do
-      expect { Board.create(player_one_id: nil, player_two_id: 'NULL') }
-        .to raise_error(ActiveRecord::NotNullViolation)
+      board = Board.create(player_one_id: nil, player_two_id: 'NULL')
+      expect(board.valid?).to be_falsey
+      expect(board.errors[:player_one_id]).to contain_exactly("can't be blank")
+
+      board = Board.create(player_one_id: 'null', player_two_id: nil)
+      expect(board.valid?).to be_falsey
+      expect(board.errors[:player_two_id]).to contain_exactly("can't be blank")
     end
 
     it 'will create a board with 2 players' do

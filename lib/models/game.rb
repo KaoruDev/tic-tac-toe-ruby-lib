@@ -26,22 +26,27 @@ class Game
       .new(player_one_id: player_one_id, player_two_id: player_two_id)
   end
 
-  def start!
-    board.save!
+  def start
+    return board.errors.full_messages.join('. ') unless board.save
+
     self.started = true
-    self
+    nil
   end
 
   def id
     board.id
   end
 
-  def board_state
-    board.state.clone
+  def state
+    {
+      winner: board.winner_id,
+      done: !board.winner_id.nil? || board_state.compact.size == 9,
+      tied: board.winner_id.nil? && board_state.compact.size == 9
+    }
   end
 
-  def winner
-    board.winner_id
+  def board_state
+    board.state.clone
   end
 
   def place(coordinate, player_mark)
