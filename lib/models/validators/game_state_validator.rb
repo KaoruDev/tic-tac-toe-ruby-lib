@@ -1,13 +1,13 @@
 class GameStateValidator < ActiveModel::Validator
   def validate(game)
     return unless game.state_changed?
-    detect_unknow_players(game)
+    detect_unknown_players(game)
     detect_uneven_turn(game) if game.errors.empty?
   end
 
   private
 
-  def detect_unknow_players(game)
+  def detect_unknown_players(game)
     unknown_players = game.state - [game.player_one_id, game.player_two_id, nil]
 
     unless unknown_players.empty?

@@ -1,4 +1,5 @@
 require_relative '../../spec_helper'
+require_relative '../../helpers/game_spec_helper.rb'
 require 'models/game.rb'
 require 'models/validators/game_state_validator.rb'
 
@@ -13,21 +14,19 @@ RSpec.describe GameStateValidator do
     end
 
     it 'will deem a valid game state valid' do
-      game.state = [1, 2, 2, 1, 1, 2]
-
+      GameSpecHelper.set_state(game, [1, 2, 2, 1, 1, 2])
       GameStateValidator.new.validate(game)
-
       expect(game.errors.empty?).to be_truthy
+    end
 
-      game.state = [1, 2, 2, 1, 1, 2, 1]
-
+    it 'will deem a valid game state valid with nil values' do
+      GameSpecHelper.set_state(game, [1, 2, 2, 1, nil, nil, 1, 2, 1])
       GameStateValidator.new.validate(game)
-
       expect(game.errors.empty?).to be_truthy
     end
 
     it 'makes sure game does not have an unknown player id' do
-      game.state[4] = 3
+      game.place(4, 3)
 
       GameStateValidator.new.validate(game)
 
@@ -39,8 +38,7 @@ RSpec.describe GameStateValidator do
     end
 
     it 'makes sure player one does not go an extra round' do
-      game.state = [1, 2, 1, 1]
-
+      GameSpecHelper.set_state(game, [1, 2, 1, 1])
       GameStateValidator.new.validate(game)
 
       expect(game.errors.empty?).to be_falsey
@@ -49,8 +47,7 @@ RSpec.describe GameStateValidator do
     end
 
     it 'makes sure player two does not go an extra round' do
-      game.state = [1, 2, 2]
-
+      GameSpecHelper.set_state(game, [1, 2, 2])
       GameStateValidator.new.validate(game)
 
       expect(game.errors.empty?).to be_falsey
