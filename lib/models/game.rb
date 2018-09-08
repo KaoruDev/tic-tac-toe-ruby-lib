@@ -1,7 +1,7 @@
-require 'models/board'
-require 'models/validators/board_state_validator.rb'
-require 'models/validators/coordinate_validator.rb'
-require 'runners/determine_winner.rb'
+require_relative './board'
+require_relative './validators/board_state_validator.rb'
+require_relative './validators/coordinate_validator.rb'
+require_relative '../runners/determine_winner.rb'
 
 class Game
   VALIDATORS = [

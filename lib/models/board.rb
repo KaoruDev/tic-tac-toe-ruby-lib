@@ -1,3 +1,5 @@
+require_relative '../db/setup.rb'
+
 class Board < ActiveRecord::Base
   after_initialize :set_default_state
 
