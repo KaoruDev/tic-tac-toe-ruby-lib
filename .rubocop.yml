@@ -1,3 +1,7 @@
 ---
 inherit_from:
-  ~/dotfiles/.rubocop.yml
+  ~/.rubocop.yml
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
