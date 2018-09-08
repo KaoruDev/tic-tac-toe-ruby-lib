@@ -8,6 +8,14 @@ class Game
     BoardStateValidator
   ].freeze
 
+  def self.find(id)
+    if (board = Board.find_by(id: id))
+      [nil, new(nil, nil, board)]
+    else
+      ["Unable to find game with id: #{id}", nil]
+    end
+  end
+
   def initialize(player_one_id, player_two_id, board = nil)
     @board = board || Board
       .new(player_one_id: player_one_id, player_two_id: player_two_id)
@@ -16,6 +24,10 @@ class Game
   def start!
     board.save!
     self.started = true
+  end
+
+  def id
+    board.id
   end
 
   def place(coordinate, player_mark)

@@ -2,6 +2,23 @@ require_relative '../spec_helper'
 require 'models/game.rb'
 
 RSpec.describe Game do
+  describe '.find' do
+    it 'will reinitialize game' do
+      game = Game.new(1, 2)
+      game.start!
+
+      id = game.id
+
+      expect(Game.find(id)[1].id).to eq(id)
+    end
+
+    it 'will return an error if game cannot be found' do
+      error, _game = Game.find(20)
+
+      expect(error).to eq('Unable to find game with id: 20')
+    end
+  end
+
   describe '#start' do
     it 'will start a valid game' do
       Game.new(1, 2).start!
