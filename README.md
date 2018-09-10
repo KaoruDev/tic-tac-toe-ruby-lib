@@ -10,7 +10,7 @@ Play tic tac toe!
 
 OR
 
-- Docker https://docs.docker.com/docker-for-mac/jj
+- Docker https://docs.docker.com/docker-for-mac/
 
 ## Documentation
 
@@ -27,8 +27,11 @@ require_relative "lib/models/game"
 
 ### Playing a game
 
-1. Start a game: `Game.new(<player_one_id>, <player_two_id>)`
-- `player_one_id` & `player_two_id` must be not null and cannot be the same
+#### 1. Start a game: 
+```
+Game.new(<player_one_id>, <player_two_id>)
+```
+`player_one_id` & `player_two_id` must be not null and cannot be the same
   value. In other words, the same player may not play themselves.
 
 ```ruby
@@ -39,7 +42,8 @@ error = game.start
 Returns error when:
 - game cannot be started. Error will describe the reason why.
 
-2. Place a mark:
+
+#### 2. Place a mark:
 ```ruby
 error = game.place(<coordinate>, <player_id>)
 ```
@@ -49,7 +53,7 @@ Returns error when:
 - A player tries to go on to a `coordinate` already taken.
 - Player assigned to `player_one_id` must go first. I.e. `Game.new(3, 2)`, player with id `3` must go first.
 
-3. Find game state
+#### 3. Find game state
 ```ruby
 winner_id = game.state
 ```
