@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+
+Bundler.require(:default)
+require_relative '../lib/models/game'
+
+class CLIRunner
+  attr_accessor :game
+
+  MARKS = [nil, 'x', 'o'].freeze
+  PLAYER_ID = 1
+  COMPUTER_ID = 2
+
+  def run
+    reset_game
+    print_prompt
+    STDIN.each_line do |cmd|
+      handle_command(cmd)
+      print_prompt
+    end
+  end
+
+  def handle_command(cmd)
+    exit(0) if cmd == "exit\n"
+
+    if (error = game.place(cmd.to_i, PLAYER_ID))
+      puts error
+    elsif winner?
+      reset_game
+    else
+      while game.place(rand(0..9), COMPUTER_ID)
+      end
+      reset_game if winner?
+    end
+  end
+
+  def print_board
+    puts "\n----------------"
+    9.times do |cell|
+      print "| #{MARKS[game.board_state[cell].to_i] || ' '} |"
+      puts "\n----------------" if ((cell + 1) % 3).zero?
+    end
+  end
+
+  def print_prompt
+    print_board
+    print '(type exit to quit):> '
+  end
+
+  def print_scores
+    puts "\n----------------------------"
+    puts "COMPUTER SCORE: #{Game.score_of(COMPUTER_ID)}"
+    puts "YOUR SCORE: #{Game.score_of(PLAYER_ID)}"
+    puts "----------------------------\n"
+  end
+
+  def winner?
+    if game.state[:done]
+      print_board
+
+      if game.state[:tied]
+        puts 'Tied game!'
+      else
+        puts "And the winner is! #{game.state[:winner]}"
+      end
+
+      true
+    end
+  end
+
+  def reset_game
+    print_scores
+    puts 'Starting a new game!'
+    self.game = Game.new(1, 2)
+    game.start
+  end
+end
+
+CLIRunner.new.run
